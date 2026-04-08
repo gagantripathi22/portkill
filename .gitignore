@@ -1,0 +1,11 @@
+# Claude settings
+.claude/
+
+# Build outputs
+portkill
+portkill-*
+*.exe
+
+# Go
+vendor/
+*.sum
