@@ -46,7 +46,8 @@ listCmd
       return;
     }
 
-    if (interactive) {
+    // When no ports specified, default to interactive mode
+    if (interactive || ports.length === 0) {
       const result = await interactiveSelect(processes, 'kill');
       if (!result || result.action === 'cancel') {
         return;

@@ -68,23 +68,29 @@ async function interactiveSelect(processes, action = 'kill') {
   }
 
   console.log('');
-  console.log(styles.title('  ┌─────────────────────────────────────────────┐'));
-  console.log(styles.title('  │           portkill - Interactive              │'));
-  console.log(styles.title('  └─────────────────────────────────────────────┘'));
+  console.log(pc.cyan('  ╔═══════════════════════════════════════════════╗'));
+  console.log(pc.cyan('  ║           ') + pc.bold(pc.white('portkill - Interactive Mode')) + pc.cyan('            ║'));
+  console.log(pc.cyan('  ╚═══════════════════════════════════════════════╝'));
+  console.log('');
+  console.log(pc.dim('  Use ') + pc.yellow('↑↓') + pc.dim(' arrows to navigate, ') + pc.yellow('Enter') + pc.dim(' to select'));
   console.log('');
 
   const choices = processes.map((p, i) => ({
-    title: `${styles.processPort(String(p.port).padEnd(6))} ${styles.processName(p.name.padEnd(15))} ${styles.muted(`(PID: ${p.pid})`)}`,
+    title: `${pc.magenta(String(p.port).padEnd(6))} ${pc.green(p.name.padEnd(15))} ${pc.dim(`PID: ${p.pid}`)}`,
     value: i,
-    description: p.cmd ? pc.dim(p.cmd.substring(0, 50)) : '',
+    description: p.cmd ? pc.dim(p.cmd.substring(0, 60)) : '',
   }));
 
   const { selected } = await prompts({
     type: 'select',
     name: 'selected',
-    message: 'Select a process:',
+    message: pc.dim('Select a process to kill:'),
     choices,
     initial: 0,
+    styles: {
+      selected: (opt) => `${pc.cyan('❯')} ${opt.title}`, // This won't work directly, but prompts uses its own
+    },
+    hint: '',
   });
 
   if (selected === undefined) {
@@ -96,17 +102,19 @@ async function interactiveSelect(processes, action = 'kill') {
 
   // Action selection
   console.log('');
-  console.log(styles.title(`  Selected: ${styles.processName(process.name)} ${styles.muted(`(PID: ${process.pid})`)} on ${styles.processPort(`port ${process.port}`)}`));
+  console.log(pc.green(`  ✓ Selected: ${pc.bold(process.name)} (PID: ${process.pid}) on port ${pc.magenta(process.port)}`));
+  console.log('');
+  console.log(pc.dim('  What do you want to do?'));
   console.log('');
 
   const { action: chosenAction } = await prompts({
     type: 'select',
     name: 'action',
-    message: 'What to do?',
+    message: pc.dim('Choose action:'),
     choices: [
-      { title: `${styles.success('→ Kill')}     ${pc.dim('SIGTERM - graceful shutdown')}`, value: 'kill' },
-      { title: `${styles.error('× Force Kill')}${pc.dim('  SIGKILL - immediate termination')}`, value: 'force' },
-      { title: `${styles.muted('↺ Cancel')}`, value: 'cancel' },
+      { title: `  ${pc.green('❯ Kill')}       ${pc.dim('SIGTERM - graceful shutdown')}`, value: 'kill' },
+      { title: `  ${pc.red('✗ Force Kill')}   ${pc.dim('SIGKILL - immediate termination')}`, value: 'force' },
+      { title: `  ${pc.gray('↺ Cancel')}`, value: 'cancel' },
     ],
     initial: 0,
   });
