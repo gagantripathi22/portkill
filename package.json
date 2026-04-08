@@ -16,7 +16,7 @@
     "process",
     "cli"
   ],
-  "author": "",
+  "author": "Gagan Tripathi",
   "license": "MIT",
   "dependencies": {
     "commander": "^11.0.0"
