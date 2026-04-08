@@ -24,13 +24,13 @@ Works on **Linux**, **macOS**, and **Windows** out of the box.
 ### One-liner (Linux/macOS)
 
 ```bash
-curl -sL https://raw.githubusercontent.com/gagantripathi22/portkill/main/install.sh | bash
+curl -sL https://raw.githubusercontent.com/gagantripathi22/portkill/master/install.sh | bash
 ```
 
 ### One-liner (Windows)
 
 ```powershell
-irm https://raw.githubusercontent.com/gagantripathi22/portkill/main/install.ps1 | iex
+irm https://raw.githubusercontent.com/gagantripathi22/portkill/master/install.ps1 | iex
 ```
 
 ### Go install
