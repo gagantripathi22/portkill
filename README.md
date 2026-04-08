@@ -8,11 +8,15 @@ Ever tried to start your dev server and got hit with `EADDRINUSE`? Yeah, me too.
 
 ## Install
 
+**Install globally with npm:**
 ```bash
-# With npm (global install)
 npm install -g portkill-cli
+```
 
-# Or use it without installing (npx)
+This installs it globally so you can run `portkill` from anywhere.
+
+**Or use without installing:**
+```bash
 npx portkill-cli kill 3000
 ```
 
@@ -59,6 +63,7 @@ portkill list --json
 
 | Flag | Description |
 |------|-------------|
+| `-i, --interactive` | Interactive mode: select ports with arrow keys |
 | `-f, --force` | Force kill (SIGKILL / /F) |
 | `-y, --yes` | Skip confirmation prompt |
 | `-v, --verbose` | Show full process info (PID, USER, CMD) |
