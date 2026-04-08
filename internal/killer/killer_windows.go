@@ -8,7 +8,7 @@ import (
 
 type windowsKiller struct{}
 
-func (k *windowsKiller) Kill(ctx context.Context, pid int, force bool) error {
+func (*windowsKiller) Kill(ctx context.Context, pid int, force bool) error {
 	var cmd *exec.Cmd
 	if force {
 		cmd = exec.CommandContext(ctx, "taskkill", "/F", "/PID", strconv.Itoa(pid))

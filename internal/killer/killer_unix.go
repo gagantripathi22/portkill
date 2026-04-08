@@ -7,7 +7,7 @@ import (
 
 type unixKiller struct{}
 
-func (k *unixKiller) Kill(ctx context.Context, pid int, force bool) error {
+func (*unixKiller) Kill(ctx context.Context, pid int, force bool) error {
 	var sig syscall.Signal
 	if force {
 		sig = syscall.SIGKILL
@@ -18,7 +18,7 @@ func (k *unixKiller) Kill(ctx context.Context, pid int, force bool) error {
 	return syscall.Kill(pid, sig)
 }
 
-func (k *unixKiller) KillAll(ctx context.Context, pids []int, force bool) error {
+func (*unixKiller) KillAll(ctx context.Context, pids []int, force bool) error {
 	var sig syscall.Signal
 	if force {
 		sig = syscall.SIGKILL
