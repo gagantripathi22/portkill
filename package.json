@@ -1,5 +1,5 @@
 {
-  "name": "@gagantripathi22/portkill",
+  "name": "portkill-cli",
   "version": "1.0.0",
   "description": "Cross-platform CLI tool to find and kill processes by port number",
   "main": "src/index.js",
