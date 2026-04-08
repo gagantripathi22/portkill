@@ -9,13 +9,11 @@ permissions:
   contents: write
 
 jobs:
-  release:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Set up Go
         uses: actions/setup-go@v5
@@ -24,16 +22,14 @@ jobs:
 
       - name: Build
         run: |
-          go build -v -ldflags="-s -w" -o portkill .
+          echo "=== Building ==="
+          go build -v -ldflags="-s -w" -o portkill . 2>&1
+          echo "=== Build complete ==="
+          ls -la portkill 2>&1 || echo "Build failed - no binary"
 
-      - name: Create checksums
-        run: sha256sum portkill > portkill.sha256
-
-      - name: Upload Release Asset
-        uses: softprops/action-gh-release@v1
+      - name: Upload artifact
+        if: success()
+        uses: actions/upload-artifact@v4
         with:
-          files: |
-            portkill
-            portkill.sha256
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          name: portkill
+          path: portkill
