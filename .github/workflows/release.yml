@@ -22,11 +22,18 @@ jobs:
 
       - name: Get dependencies
         run: |
-          go get ./...
-          go mod download
-
-      - name: Tidy modules
-        run: go mod tidy
+          echo "=== go version ==="
+          go version
+          echo "=== Listing files ==="
+          ls -la
+          echo "=== go.mod ==="
+          cat go.mod
+          echo "=== go get ==="
+          go get github.com/charmbracelet/bubbletea@v0.25.0 2>&1
+          go get github.com/charmbracelet/lipgloss@v0.9.1 2>&1
+          go get github.com/spf13/cobra@v1.8.0 2>&1
+          echo "=== after go get ==="
+          cat go.sum | head -5
 
       - name: Build
         run: go build -ldflags="-s -w" -o portkill .
