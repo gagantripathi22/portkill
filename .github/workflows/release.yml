@@ -14,42 +14,18 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
 
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
           go-version: '1.21'
-          cache: true
-
-      - name: Print env
-        run: |
-          echo "GITHUB_REF: $GITHUB_REF"
-          echo "GITHUB_SHA: $GITHUB_SHA"
-          echo "GITHUB_REPOSITORY: $GITHUB_REPOSITORY"
-          go version
-          go env GOOS GOARCH GOMOD
-
-      - name: Download modules
-        run: |
-          echo "Downloading modules..."
-          go mod download 2>&1
-          echo "Done"
 
       - name: Build
-        run: |
-          echo "Building..."
-          go build -v ./... 2>&1
-          echo "Build finished"
+        run: go build -ldflags="-s -w" -o portkill .
 
-      - name: Verify build
-        run: |
-          echo "Checking for binary..."
-          if [ -f "./portkill" ]; then
-            echo "Binary exists"
-            ls -la ./portkill
-          else
-            echo "No binary at ./portkill"
-            find . -name "portkill" -type f 2>/dev/null
-          fi
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: portkill
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
