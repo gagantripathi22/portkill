@@ -25,17 +25,17 @@ jobs:
       - name: Get tag
         run: echo "TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
 
+      - name: Resolve dependencies
+        run: go mod tidy
+
       - name: Build
-        run: |
-          go build -ldflags="-s -w" -o portkill .
+        run: go build -ldflags="-s -w" -o portkill .
 
       - name: Test build
-        run: |
-          ./portkill version
+        run: ./portkill version
 
       - name: Create checksums
-        run: |
-          sha256sum portkill > portkill.sha256
+        run: sha256sum portkill > portkill.sha256
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
