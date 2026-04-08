@@ -21,29 +21,16 @@ jobs:
           go-version: '1.21'
           cache: true
 
-      - name: Build Linux x64
+      - name: Build
         run: |
-          echo "Building Linux x64..."
-          CGO_ENABLED=0 go build -ldflags="-s -w" -o portkill .
-          echo "Build output:"
-          ls -la portkill
-          file portkill
-
-      - name: Build Linux ARM64
-        run: |
-          echo "Building Linux ARM64..."
-          GOOS=linux GOARCH=arm64 CGO_ENABLED=0 go build -ldflags="-s -w" -o portkill-linux-arm64 .
-          ls -la portkill-linux-arm64
-
-      - name: Create checksums
-        run: sha256sum portkill > portkill.sha256
+          echo "=== Building ==="
+          go build -v -o portkill . 2>&1
+          echo "=== Done ==="
+          ls -la portkill 2>&1 || echo "No binary created"
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          files: |
-            portkill
-            portkill.sha256
-            portkill-linux-arm64
+          files: portkill
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
