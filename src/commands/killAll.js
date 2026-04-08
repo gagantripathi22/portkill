@@ -1,6 +1,6 @@
 const { Command } = require('commander');
 const { createFinder, createKiller } = require('../index');
-const { printProcesses, confirm, parsePorts } = require('../utils/formatter');
+const { printProcesses, confirm, parsePorts, styles } = require('../utils/formatter');
 
 const killAllCmd = new Command('kill-all');
 killAllCmd
@@ -23,12 +23,12 @@ killAllCmd
         const processes = await finder.findByPort(port);
         allProcesses.push(...processes);
       } catch (err) {
-        console.error(`Failed to find processes on port ${port}: ${err.message}`);
+        console.error(`${styles.warning('Warning:')} Failed to find processes on port ${port}: ${err.message}`);
       }
     }
 
     if (allProcesses.length === 0) {
-      console.log('No processes found');
+      console.log(styles.muted('No processes found'));
       return;
     }
 
@@ -37,23 +37,23 @@ killAllCmd
     if (!yes) {
       const confirmed = await confirm(allProcesses);
       if (!confirmed) {
-        console.log('Aborted');
+        console.log(styles.muted('Aborted'));
         return;
       }
     }
 
-    let lastErr = null;
+    let hasError = false;
     for (const p of allProcesses) {
       try {
         await killer.kill(p.pid, force);
-        console.log(`Killed PID ${p.pid} (${p.name}) on port ${p.port}`);
+        console.log(styles.success(`✓ Killed ${p.name} (PID: ${p.pid}) on port ${p.port}`));
       } catch (err) {
-        console.error(`Failed to kill PID ${p.pid}: ${err.message}`);
-        lastErr = err;
+        console.error(styles.error(`✗ Failed to kill PID ${p.pid}: ${err.message}`));
+        hasError = true;
       }
     }
 
-    if (lastErr) {
+    if (hasError) {
       process.exit(1);
     }
   });

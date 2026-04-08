@@ -1,6 +1,6 @@
 const { Command } = require('commander');
 const { createFinder } = require('../index');
-const { printProcesses, printProcessesJSON } = require('../utils/formatter');
+const { printProcesses, printProcessesJSON, styles } = require('../utils/formatter');
 
 const findCmd = new Command('find');
 findCmd
@@ -9,6 +9,7 @@ findCmd
   .action(async (pattern) => {
     const options = findCmd.parent.opts();
     const json = options.json || false;
+    const verbose = options.verbose || false;
 
     const finder = createFinder();
 
@@ -16,19 +17,19 @@ findCmd
     try {
       processes = await finder.findByPattern(pattern);
     } catch (err) {
-      console.error(`Failed to find processes: ${err.message}`);
+      console.error(`${styles.error('Error:')} Failed to find processes: ${err.message}`);
       process.exit(1);
     }
 
     if (processes.length === 0) {
-      console.log(`No processes found matching '${pattern}'`);
+      console.log(styles.muted(`No processes found matching '${pattern}'`));
       return;
     }
 
     if (json) {
       printProcessesJSON(processes);
     } else {
-      printProcesses(processes, options.verbose || false);
+      printProcesses(processes, verbose);
     }
   });
 

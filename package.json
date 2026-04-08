@@ -22,7 +22,10 @@
   "author": "Gagan Tripathi",
   "license": "MIT",
   "dependencies": {
-    "commander": "^11.0.0"
+    "commander": "^11.0.0",
+    "picocolors": "^1.1.1",
+    "portkill-cli": "^1.0.0",
+    "prompts": "^2.4.2"
   },
   "preferGlobal": true,
   "engines": {

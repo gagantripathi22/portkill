@@ -1,17 +1,19 @@
 const { Command } = require('commander');
-const { createFinder } = require('../index');
-const { printProcesses, printProcessesJSON, parsePorts } = require('../utils/formatter');
+const { createFinder, createKiller } = require('../index');
+const { printProcesses, printProcessesJSON, parsePorts, interactiveSelect, styles } = require('../utils/formatter');
 
 const listCmd = new Command('list');
 listCmd
-  .description('List processes using specific ports (or all listening ports if no port specified)')
+  .description('List processes using specific ports')
   .argument('[ports...]', 'Port numbers (optional, lists all if not specified)')
   .action(async (ports) => {
     const options = listCmd.parent.opts();
     const json = options.json || false;
     const verbose = options.verbose || false;
+    const interactive = options.interactive || false;
 
     const finder = createFinder();
+    const killer = createKiller();
 
     let processes = [];
 
@@ -19,7 +21,7 @@ listCmd
       try {
         processes = await finder.listAll();
       } catch (err) {
-        console.error(`Failed to list processes: ${err.message}`);
+        console.error(`${styles.error('Error:')} Failed to list processes: ${err.message}`);
         process.exit(1);
       }
     } else {
@@ -29,21 +31,45 @@ listCmd
           const procs = await finder.findByPort(port);
           processes.push(...procs);
         } catch (err) {
-          console.error(`Failed to find processes on port ${port}: ${err.message}`);
+          console.error(`${styles.error('Error:')} Failed to find processes on port ${port}: ${err.message}`);
         }
       }
     }
 
     if (processes.length === 0) {
-      console.log('No processes found');
+      console.log(styles.muted('No processes found'));
       return;
     }
 
     if (json) {
       printProcessesJSON(processes);
-    } else {
-      printProcesses(processes, verbose);
+      return;
     }
+
+    if (interactive) {
+      const result = await interactiveSelect(processes, 'kill');
+      if (!result || result.action === 'cancel') {
+        return;
+      }
+
+      const { process, action } = result;
+      const force = action === 'force';
+
+      try {
+        await killer.kill(process.pid, force);
+        console.log('');
+        console.log(styles.success(`  ✓ Killed ${process.name} (PID: ${process.pid}) on port ${process.port}`));
+        console.log('');
+      } catch (err) {
+        console.error('');
+        console.error(styles.error(`  ✗ Failed to kill: ${err.message}`));
+        console.log('');
+        process.exit(1);
+      }
+      return;
+    }
+
+    printProcesses(processes, verbose);
   });
 
 module.exports = listCmd;
