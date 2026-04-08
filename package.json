@@ -1,10 +1,13 @@
 {
-  "name": "portkill",
+  "name": "@gagantripathi/portkill",
   "version": "1.0.0",
   "description": "Cross-platform CLI tool to find and kill processes by port number",
   "main": "src/index.js",
   "bin": {
     "portkill": "./bin/portkill.js"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "scripts": {
     "start": "node bin/portkill.js",
