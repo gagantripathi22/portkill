@@ -10,10 +10,10 @@ Ever tried to start your dev server and got hit with `EADDRINUSE`? Yeah, me too.
 
 ```bash
 # With npm (global install)
-npm install -g @gagantripathi/portkill
+npm install -g @gagantripathi22/portkill
 
 # Or use it without installing (npx)
-npx @gagantripathi/portkill kill 3000
+npx @gagantripathi22/portkill kill 3000
 ```
 
 **Requirements:**
