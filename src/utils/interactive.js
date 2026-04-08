@@ -15,10 +15,10 @@ async function interactiveSelect(processes) {
   console.log(pc.dim('  Use ') + pc.yellow('↑↓') + pc.dim(' arrows to navigate, ') + pc.green('Enter') + pc.dim(' to select'));
   console.log('');
 
-  // Create choices for enquirer
+  // Create choices for enquirer - value is the process object itself
   const choices = processes.map((p, i) => ({
     name: `${String(p.port).padEnd(6)} ${p.name.padEnd(15)} (PID: ${p.pid})`,
-    value: i,
+    value: p,
     message: `${pc.magenta(String(p.port).padEnd(6))} ${pc.green(p.name.padEnd(15))} ${pc.dim(`PID: ${p.pid}`)}`,
   }));
 
@@ -43,15 +43,18 @@ async function interactiveSelect(processes) {
     },
   });
 
-  let selectedIndex;
+  let selected;
   try {
-    selectedIndex = await selectedPrompt.run();
+    selected = await selectedPrompt.run();
   } catch (err) {
     console.log(pc.gray('\n  Cancelled\n'));
     return null;
   }
 
-  const selected = processes[selectedIndex];
+  if (!selected) {
+    console.log(pc.gray('\n  Cancelled\n'));
+    return null;
+  }
 
   // Action selection
   console.log('');
