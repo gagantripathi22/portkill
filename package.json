@@ -1,0 +1,28 @@
+{
+  "name": "portkill",
+  "version": "1.0.0",
+  "description": "Cross-platform CLI tool to find and kill processes by port number",
+  "main": "src/index.js",
+  "bin": {
+    "portkill": "./bin/portkill.js"
+  },
+  "scripts": {
+    "start": "node bin/portkill.js",
+    "test": "echo \"No tests yet\" && exit 0"
+  },
+  "keywords": [
+    "port",
+    "kill",
+    "process",
+    "cli"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^11.0.0"
+  },
+  "preferGlobal": true,
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
