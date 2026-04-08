@@ -24,25 +24,23 @@ jobs:
         id: get_tag
         run: echo "TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
 
+      - name: Download modules
+        run: go mod download
+
       - name: Build Linux x64
-        run: |
-          go build -ldflags="-s -w" -o portkill-linux-amd64 .
+        run: CGO_ENABLED=0 go build -ldflags="-s -w" -o portkill-linux-amd64 .
 
       - name: Build Linux ARM64
-        run: |
-          GOOS=linux GOARCH=arm64 CGO_ENABLED=0 go build -ldflags="-s -w" -o portkill-linux-arm64 .
+        run: GOOS=linux GOARCH=arm64 CGO_ENABLED=0 go build -ldflags="-s -w" -o portkill-linux-arm64 .
 
       - name: Build Windows
-        run: |
-          GOOS=windows CGO_ENABLED=0 go build -ldflags="-s -w" -o portkill-windows-amd64.exe .
+        run: GOOS=windows CGO_ENABLED=0 go build -ldflags="-s -w" -o portkill-windows-amd64.exe .
 
       - name: Build macOS x64
-        run: |
-          GOOS=darwin GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-s -w" -o portkill-darwin-amd64 .
+        run: GOOS=darwin GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-s -w" -o portkill-darwin-amd64 .
 
       - name: Build macOS ARM64
-        run: |
-          GOOS=darwin GOARCH=arm64 CGO_ENABLED=0 go build -ldflags="-s -w" -o portkill-darwin-arm64 .
+        run: GOOS=darwin GOARCH=arm64 CGO_ENABLED=0 go build -ldflags="-s -w" -o portkill-darwin-arm64 .
 
       - name: Create checksums
         run: |
