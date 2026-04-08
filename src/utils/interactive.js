@@ -1,6 +1,12 @@
 const pc = require('picocolors');
 const { Select } = require('enquirer');
 
+// Clear screen helper
+const clear = () => {
+  process.stdout.write('\x1b[2J');
+  process.stdout.write('\x1b[H');
+};
+
 async function interactiveSelect(processes) {
   if (processes.length === 0) {
     console.log(pc.gray('No processes found'));
@@ -8,6 +14,7 @@ async function interactiveSelect(processes) {
   }
 
   while (true) {
+    clear();
     console.log('');
     console.log(pc.cyan('  ╔═══════════════════════════════════════════════╗'));
     console.log(pc.cyan('  ║') + pc.bold(pc.white('             portkill - Interactive Mode              ')) + pc.cyan('║'));
@@ -16,10 +23,9 @@ async function interactiveSelect(processes) {
     console.log(pc.dim('  Use ') + pc.yellow('↑↓') + pc.dim(' arrows to navigate, ') + pc.green('Enter') + pc.dim(' to select, ') + pc.red('q') + pc.dim(' to quit'));
     console.log('');
 
-    // Create choices for enquirer - value is the process object itself
-    const choices = processes.map((p) => ({
-      name: `${String(p.port).padEnd(6)} ${p.name.padEnd(15)} (PID: ${p.pid})`,
-      value: p,
+    // Create choices for enquirer - value is index, message is display
+    const choices = processes.map((p, i) => ({
+      value: i,
       message: `${pc.magenta(String(p.port).padEnd(6))} ${pc.green(p.name.padEnd(15))} ${pc.dim(`PID: ${p.pid}`)}`,
     }));
 
@@ -31,38 +37,39 @@ async function interactiveSelect(processes) {
       showAlerts: false,
       styles: {
         afterSound: '',
-        answer: (state, choice, selected) => {
-          if (selected) {
-            return pc.cyan('▸ ') + pc.bgCyan(pc.black(` ${choice.message} `));
-          }
-          return '  ' + choice.message;
-        },
-        selected: (state, choice, selected) => {
-          return pc.cyan('▸ ') + pc.bgCyan(pc.black(` ${choice.message} `));
-        },
-        cursor: () => pc.cyan('▸'),
+        selected: () => '',
+        cursor: () => pc.cyan('▸ '),
       },
     });
 
-    let selected;
+    let selectedIndex;
     try {
-      selected = await selectedPrompt.run();
+      selectedIndex = await selectedPrompt.run();
     } catch (err) {
+      clear();
       console.log(pc.gray('\n  Goodbye!\n'));
       return null;
     }
 
-    if (!selected) {
+    if (selectedIndex === undefined) {
+      clear();
       console.log(pc.gray('\n  Goodbye!\n'));
       return null;
     }
+
+    const selected = processes[selectedIndex];
 
     // Action selection loop
     while (true) {
+      clear();
+      console.log('');
+      console.log(pc.cyan('  ╔═══════════════════════════════════════════════╗'));
+      console.log(pc.cyan('  ║') + pc.bold(pc.white('                 Choose Action                        ')) + pc.cyan('║'));
+      console.log(pc.cyan('  ╚═══════════════════════════════════════════════╝'));
       console.log('');
       console.log(pc.green(`  Selected: ${pc.bold(selected.name)} (PID: ${selected.pid}) on port ${pc.magenta(selected.port)}`));
       console.log('');
-      console.log(pc.dim('  What do you want to do?'));
+      console.log(pc.dim('  Use ') + pc.yellow('↑↓') + pc.dim(' arrows to navigate, ') + pc.green('Enter') + pc.dim(' to confirm'));
       console.log('');
 
       const actionPrompt = new Select({
@@ -70,25 +77,23 @@ async function interactiveSelect(processes) {
         message: 'Choose action:',
         choices: [
           {
-            name: 'kill',
-            message: `  ${pc.green('▸ Kill')}         ${pc.dim('SIGTERM - graceful shutdown')}`,
+            value: 'kill',
+            message: `  ${pc.green('Kill')}         ${pc.dim('SIGTERM - graceful shutdown')}`,
           },
           {
-            name: 'force',
-            message: `  ${pc.red('▸ Force Kill')}    ${pc.dim('SIGKILL - immediate termination')}`,
+            value: 'force',
+            message: `  ${pc.red('Force Kill')}    ${pc.dim('SIGKILL - immediate termination')}`,
           },
           {
-            name: 'back',
-            message: `  ${pc.gray('↺ Back')}         ${pc.dim('Select a different process')}`,
+            value: 'back',
+            message: `  ${pc.gray('Back')}          ${pc.dim('Select a different process')}`,
           },
         ],
         initial: 0,
         showAlerts: false,
         styles: {
-          selected: (state, choice) => {
-            return pc.cyan('▸ ') + pc.green(choice.message.split('▸')[1] || choice.message);
-          },
-          cursor: () => pc.cyan('▸'),
+          selected: () => '',
+          cursor: () => pc.cyan('▸ '),
         },
       });
 
@@ -96,6 +101,7 @@ async function interactiveSelect(processes) {
       try {
         action = await actionPrompt.run();
       } catch (err) {
+        clear();
         console.log(pc.gray('\n  Goodbye!\n'));
         return null;
       }
@@ -106,6 +112,7 @@ async function interactiveSelect(processes) {
       }
 
       if (action === 'kill' || action === 'force') {
+        clear();
         return { process: selected, action };
       }
     }
