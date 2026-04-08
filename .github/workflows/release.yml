@@ -20,11 +20,22 @@ jobs:
         with:
           go-version: '1.21'
 
-      - name: Tidy modules
-        run: go mod tidy
+      - name: Verify files
+        run: |
+          echo "=== Files ==="
+          ls -la
+          echo "=== go.mod ==="
+          cat go.mod
+          echo "=== go.sum ==="
+          head -3 go.sum
 
       - name: Build
-        run: go build -ldflags="-s -w" -o portkill .
+        run: go build -v -o portkill .
+
+      - name: Verify binary
+        run: |
+          echo "Binary built:"
+          ls -la portkill
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
