@@ -23,8 +23,8 @@
   "license": "MIT",
   "dependencies": {
     "commander": "^11.0.0",
-    "picocolors": "^1.1.1",
-    "prompts": "^2.4.2"
+    "enquirer": "^2.4.1",
+    "picocolors": "^1.1.1"
   },
   "preferGlobal": true,
   "engines": {

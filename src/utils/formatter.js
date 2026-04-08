@@ -1,5 +1,5 @@
 const pc = require('picocolors');
-const prompts = require('prompts');
+const { Confirm } = require('enquirer');
 
 const styles = {
   title: (t) => pc.cyan(pc.bold(t)),
@@ -51,75 +51,18 @@ function printProcessesJSON(processes) {
   console.log(JSON.stringify(processes, null, 2));
 }
 
-async function confirm(processes) {
-  const { value } = await prompts({
-    type: 'confirm',
-    name: 'value',
-    message: `${styles.warning(`Kill ${processes.length} process(es)?`)} ${pc.dim('(y/N)')}`,
+async function confirm(message) {
+  const prompt = new Confirm({
+    name: 'confirm',
+    message: message,
     initial: false,
   });
-  return value;
-}
 
-async function interactiveSelect(processes, action = 'kill') {
-  if (processes.length === 0) {
-    console.log(pc.gray('No processes found'));
-    return;
+  try {
+    return await prompt.run();
+  } catch (err) {
+    return false;
   }
-
-  console.log('');
-  console.log(pc.cyan('  ╔═══════════════════════════════════════════════╗'));
-  console.log(pc.cyan('  ║           ') + pc.bold(pc.white('portkill - Interactive Mode')) + pc.cyan('            ║'));
-  console.log(pc.cyan('  ╚═══════════════════════════════════════════════╝'));
-  console.log('');
-  console.log(pc.dim('  Use ') + pc.yellow('↑↓') + pc.dim(' arrows to navigate, ') + pc.yellow('Enter') + pc.dim(' to select'));
-  console.log('');
-
-  const choices = processes.map((p, i) => ({
-    title: `${pc.magenta(String(p.port).padEnd(6))} ${pc.green(p.name.padEnd(15))} ${pc.dim(`PID: ${p.pid}`)}`,
-    value: i,
-    description: p.cmd ? pc.dim(p.cmd.substring(0, 60)) : '',
-  }));
-
-  const { selected } = await prompts({
-    type: 'select',
-    name: 'selected',
-    message: pc.dim('Select a process to kill:'),
-    choices,
-    initial: 0,
-    styles: {
-      selected: (opt) => `${pc.cyan('❯')} ${opt.title}`, // This won't work directly, but prompts uses its own
-    },
-    hint: '',
-  });
-
-  if (selected === undefined) {
-    console.log(pc.gray('\n  Cancelled\n'));
-    return null;
-  }
-
-  const process = processes[selected];
-
-  // Action selection
-  console.log('');
-  console.log(pc.green(`  ✓ Selected: ${pc.bold(process.name)} (PID: ${process.pid}) on port ${pc.magenta(process.port)}`));
-  console.log('');
-  console.log(pc.dim('  What do you want to do?'));
-  console.log('');
-
-  const { action: chosenAction } = await prompts({
-    type: 'select',
-    name: 'action',
-    message: pc.dim('Choose action:'),
-    choices: [
-      { title: `  ${pc.green('❯ Kill')}       ${pc.dim('SIGTERM - graceful shutdown')}`, value: 'kill' },
-      { title: `  ${pc.red('✗ Force Kill')}   ${pc.dim('SIGKILL - immediate termination')}`, value: 'force' },
-      { title: `  ${pc.gray('↺ Cancel')}`, value: 'cancel' },
-    ],
-    initial: 0,
-  });
-
-  return { process, action: chosenAction };
 }
 
 function parsePort(s) {
@@ -137,4 +80,4 @@ function parsePorts(s) {
   return parts.map(parsePort);
 }
 
-module.exports = { printProcesses, printProcessesJSON, confirm, interactiveSelect, parsePort, parsePorts, styles };
+module.exports = { printProcesses, printProcessesJSON, confirm, parsePort, parsePorts, styles };

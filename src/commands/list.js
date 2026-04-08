@@ -1,6 +1,7 @@
 const { Command } = require('commander');
 const { createFinder, createKiller } = require('../index');
-const { printProcesses, printProcessesJSON, parsePorts, interactiveSelect, styles } = require('../utils/formatter');
+const { printProcesses, printProcessesJSON, parsePorts, styles } = require('../utils/formatter');
+const { interactiveSelect } = require('../utils/interactive');
 
 const listCmd = new Command('list');
 listCmd
@@ -48,7 +49,7 @@ listCmd
 
     // When no ports specified, default to interactive mode
     if (interactive || ports.length === 0) {
-      const result = await interactiveSelect(processes, 'kill');
+      const result = await interactiveSelect(processes);
       if (!result || result.action === 'cancel') {
         return;
       }
