@@ -19,16 +19,14 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: '1.21'
-          cache: true
 
-      - name: Debug
+      - name: Test
         run: |
+          echo "Starting build"
           go version
-          go env GOPATH GOMODCACHE
+          echo "go.mod contents:"
+          cat go.mod
+          echo "Files:"
           ls -la
-
-      - name: Download modules
-        run: go mod download
-
-      - name: Build
-        run: go build -v -ldflags="-s -w" -o portkill .
+          echo "Building..."
+          go build -v ./... 2>&1 | head -20
