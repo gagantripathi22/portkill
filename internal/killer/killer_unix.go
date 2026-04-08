@@ -2,8 +2,6 @@ package killer
 
 import (
 	"context"
-	"os/exec"
-	"strconv"
 	"syscall"
 )
 
@@ -35,14 +33,4 @@ func (k *unixKiller) KillAll(ctx context.Context, pids []int, force bool) error 
 		}
 	}
 	return lastErr
-}
-
-// execKill is an alternative implementation using the kill command
-func execKill(pid int, force bool) error {
-	sig := "TERM"
-	if force {
-		sig = "KILL"
-	}
-	cmd := exec.Command("kill", "-"+sig, strconv.Itoa(pid))
-	return cmd.Run()
 }

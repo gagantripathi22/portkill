@@ -3,6 +3,7 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"os"
 
 	"portkill/internal/finder"
 	"portkill/internal/formatter"
