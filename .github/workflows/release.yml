@@ -14,6 +14,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Go
         uses: actions/setup-go@v5
@@ -21,49 +23,26 @@ jobs:
           go-version: '1.21'
 
       - name: Get tag
-        id: get_tag
         run: echo "TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
 
-      - name: Download modules
-        run: go mod download
+      - name: Build
+        run: |
+          go build -ldflags="-s -w" -o portkill .
 
-      - name: Build Linux x64
-        run: CGO_ENABLED=0 go build -ldflags="-s -w" -o portkill-linux-amd64 .
-
-      - name: Build Linux ARM64
-        run: GOOS=linux GOARCH=arm64 CGO_ENABLED=0 go build -ldflags="-s -w" -o portkill-linux-arm64 .
-
-      - name: Build Windows
-        run: GOOS=windows CGO_ENABLED=0 go build -ldflags="-s -w" -o portkill-windows-amd64.exe .
-
-      - name: Build macOS x64
-        run: GOOS=darwin GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-s -w" -o portkill-darwin-amd64 .
-
-      - name: Build macOS ARM64
-        run: GOOS=darwin GOARCH=arm64 CGO_ENABLED=0 go build -ldflags="-s -w" -o portkill-darwin-arm64 .
+      - name: Test build
+        run: |
+          ./portkill version
 
       - name: Create checksums
         run: |
-          sha256sum portkill-linux-amd64 > portkill-linux-amd64.sha256
-          sha256sum portkill-linux-arm64 > portkill-linux-arm64.sha256
-          sha256sum portkill-windows-amd64.exe > portkill-windows-amd64.exe.sha256
-          sha256sum portkill-darwin-amd64 > portkill-darwin-amd64.sha256
-          sha256sum portkill-darwin-arm64 > portkill-darwin-arm64.sha256
+          sha256sum portkill > portkill.sha256
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            portkill-linux-amd64
-            portkill-linux-amd64.sha256
-            portkill-linux-arm64
-            portkill-linux-arm64.sha256
-            portkill-windows-amd64.exe
-            portkill-windows-amd64.exe.sha256
-            portkill-darwin-amd64
-            portkill-darwin-amd64.sha256
-            portkill-darwin-arm64
-            portkill-darwin-arm64.sha256
+            portkill
+            portkill.sha256
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
