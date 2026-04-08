@@ -24,13 +24,19 @@ jobs:
         id: get_tag
         run: echo "TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
 
-      - name: Build binaries
+      - name: Build Linux binaries
         run: |
           go build -ldflags="-s -w" -o portkill-linux-amd64 portkill
-          go build -ldflags="-s -w" -o portkill-linux-arm64 portkill
-          go build -ldflags="-s -w" -o portkill-darwin-amd64 portkill
-          go build -ldflags="-s -w" -o portkill-darwin-arm64 portkill
-          go build -ldflags="-s -w" -o portkill-windows-amd64.exe portkill
+          GOOS=linux GOARCH=arm64 go build -ldflags="-s -w" -o portkill-linux-arm64 portkill
+
+      - name: Build macOS binaries
+        run: |
+          GOOS=darwin GOARCH=amd64 go build -ldflags="-s -w" -o portkill-darwin-amd64 portkill
+          GOOS=darwin GOARCH=arm64 go build -ldflags="-s -w" -o portkill-darwin-arm64 portkill
+
+      - name: Build Windows binary
+        run: |
+          GOOS=windows go build -ldflags="-s -w" -o portkill-windows-amd64.exe portkill
 
       - name: Create checksums
         run: |
