@@ -1,4 +1,4 @@
-module portree
+module portkill
 
 go 1.21
 
