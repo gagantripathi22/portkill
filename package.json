@@ -1,6 +1,6 @@
 {
   "name": "portkill-cli",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Cross-platform CLI tool to find and kill processes by port number",
   "main": "src/index.js",
   "bin": {
@@ -24,7 +24,6 @@
   "dependencies": {
     "commander": "^11.0.0",
     "picocolors": "^1.1.1",
-    "portkill-cli": "^1.0.0",
     "prompts": "^2.4.2"
   },
   "preferGlobal": true,
