@@ -54,13 +54,13 @@ listCmd
         return;
       }
 
-      const { process, action } = result;
-      const force = action === 'force';
+      const force = result.action === 'force';
+      const proc = result.process;
 
       try {
-        await killer.kill(process.pid, force);
+        await killer.kill(proc.pid, force);
         console.log('');
-        console.log(styles.success(`  ✓ Killed ${process.name} (PID: ${process.pid}) on port ${process.port}`));
+        console.log(styles.success(`  ✓ Killed ${proc.name} (PID: ${proc.pid}) on port ${proc.port}`));
         console.log('');
       } catch (err) {
         console.error('');

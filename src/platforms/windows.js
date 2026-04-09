@@ -113,9 +113,17 @@ class WindowsFinder {
 }
 
 class WindowsKiller {
-  kill(pid, force) {
+  async kill(pid, force) {
     const flag = force ? '/F' : '';
-    return execPromise(`taskkill ${flag} /PID ${pid}`);
+    try {
+      await execPromise(`taskkill ${flag} /PID ${pid}`);
+    } catch (err) {
+      if (!force) {
+        await execPromise(`taskkill /F /PID ${pid}`);
+      } else {
+        throw err;
+      }
+    }
   }
 
   async killAll(pids, force) {
