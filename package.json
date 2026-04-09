@@ -1,7 +1,12 @@
 {
   "name": "portkill-cli",
-  "version": "1.6.0",
+  "version": "1.7.4",
   "description": "Cross-platform CLI tool to find and kill processes by port number",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gagantripathi22/portkill.git"
+  },
+  "homepage": "https://github.com/gagantripathi22/portkill",
   "main": "src/index.js",
   "bin": {
     "portkill": "./bin/portkill.js"
