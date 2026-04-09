@@ -119,7 +119,12 @@ class WindowsKiller {
       await execPromise(`taskkill ${flag} /PID ${pid}`);
     } catch (err) {
       if (err.message.includes('Access is denied')) {
-        throw new Error('Access denied. Try running as Administrator.');
+        try {
+          await execPromise(`powershell -Command "Stop-Process -Id ${pid} -Force"`);
+          return;
+        } catch (psErr) {
+          throw new Error('Access denied. Try running as Administrator.');
+        }
       }
       if (!force) {
         try {
@@ -127,7 +132,12 @@ class WindowsKiller {
           return;
         } catch (retryErr) {
           if (retryErr.message.includes('Access is denied')) {
-            throw new Error('Access denied. Try running as Administrator.');
+            try {
+              await execPromise(`powershell -Command "Stop-Process -Id ${pid} -Force"`);
+              return;
+            } catch (psErr) {
+              throw new Error('Access denied. Try running as Administrator.');
+            }
           }
           throw retryErr;
         }
