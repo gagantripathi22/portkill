@@ -118,11 +118,21 @@ class WindowsKiller {
     try {
       await execPromise(`taskkill ${flag} /PID ${pid}`);
     } catch (err) {
-      if (!force) {
-        await execPromise(`taskkill /F /PID ${pid}`);
-      } else {
-        throw err;
+      if (err.message.includes('Access is denied')) {
+        throw new Error('Access denied. Try running as Administrator.');
       }
+      if (!force) {
+        try {
+          await execPromise(`taskkill /F /PID ${pid}`);
+          return;
+        } catch (retryErr) {
+          if (retryErr.message.includes('Access is denied')) {
+            throw new Error('Access denied. Try running as Administrator.');
+          }
+          throw retryErr;
+        }
+      }
+      throw err;
     }
   }
 
