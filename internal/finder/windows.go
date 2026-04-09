@@ -21,6 +21,7 @@ func (f *windowsFinder) FindByPort(ctx context.Context, port int) ([]ProcessInfo
 
 	var processes []ProcessInfo
 	portStr := ":" + strconv.Itoa(port)
+	seen := make(map[int]bool)
 
 	scanner := bufio.NewScanner(strings.NewReader(string(output)))
 	for scanner.Scan() {
@@ -30,9 +31,10 @@ func (f *windowsFinder) FindByPort(ctx context.Context, port int) ([]ProcessInfo
 			parts := strings.Fields(line)
 			if len(parts) >= 5 {
 				pid, err := strconv.Atoi(parts[len(parts)-1])
-				if err != nil {
+				if err != nil || seen[pid] {
 					continue
 				}
+				seen[pid] = true
 
 				// Get process name via tasklist
 				name, user, cmdLine, err := getProcessDetails(pid)
