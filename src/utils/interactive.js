@@ -24,6 +24,7 @@ async function interactiveSelect(processes) {
       choices,
       initial: 0,
       showAlerts: false,
+      clearPromptOnDone: false,
       styles: {
         selected: () => '',
         cursor: () => pc.cyan('▸ '),
@@ -61,6 +62,7 @@ async function interactiveSelect(processes) {
         ],
         initial: 0,
         showAlerts: false,
+        clearPromptOnDone: false,
         styles: {
           selected: () => '',
           cursor: () => pc.cyan('▸ '),
